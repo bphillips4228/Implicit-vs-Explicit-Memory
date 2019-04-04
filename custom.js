@@ -1,4 +1,8 @@
+
 var name = "";
+
+var total = 0;
+var wrong = 0;
 
 var welcome = {
 	type: "html-keyboard-response",
@@ -20,12 +24,12 @@ var instructions = {
       "<img style='width: 300px;' src='img/4.png'></img>" +
       "<p class='small' style='margin-top: -.5rem;'><strong>Press the K key</strong></p></div>" +
       "<p>Press any key to begin.</p>",
-      post_trial_gap: 1000
+      post_trial_gap: 250
 };
 
 var timeline = [];
 
-var test_stimuli = [
+var test_stimuli_1 = [
   { stimulus: "img/1.png", data: {test_part: 'test', correct_response: 'd'}},
   { stimulus: "img/2.png", data: {test_part: 'test', correct_response: 'f'}},
   { stimulus: "img/3.png", data: {test_part: 'test', correct_response: 'j'}},
@@ -35,25 +39,25 @@ var test_stimuli = [
 var trial_1 = {
   type: 'image-keyboard-response',
   stimulus: "img/1.png",
-  choices: ['d', 'f', 'j', 'k']
+  choices: ['d', 'f', 'j', 'k'],
 };
 
 var trial_2 = {
   type: 'image-keyboard-response',
   stimulus: 'img/2.png',
-  choices: ['d', 'f', 'j', 'k']
+  choices: ['d', 'f', 'j', 'k'],
 };
 
 var trial_3 = {
   type: 'image-keyboard-response',
   stimulus: 'img/3.png',
-  choices: ['d', 'f', 'j', 'k']
+  choices: ['d', 'f', 'j', 'k'],
 };
 
 var trial_4 = {
   type: 'image-keyboard-response',
   stimulus: 'img/4.png',
-  choices: ['d', 'f', 'j', 'k']
+  choices: ['d', 'f', 'j', 'k'],
 };
 
 var test = {
@@ -62,49 +66,119 @@ var test = {
       choices: ['d', 'f', 'j', 'k'],
       data: jsPsych.timelineVariable('data'),
       on_finish: function(data){
-      	data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
+        data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode(data.correct_response);
       }
 };
 
-/*var fixation = {
-  type: 'html-keyboard-response',
-  stimulus: '<div style="font-size:60px;">+</div>',
-  choices: jsPsych.NO_KEYS,
-  trial_duration: function(){
-    return jsPsych.randomization.sampleWithoutReplacement([250, 500, 750, 1000, 1250, 1500, 1750, 2000], 1)[0];
-  },
-  data: {test_part: 'fixation'}
-};
-*/
 var test_procedure = {
-  timeline: [test],
-  timeline_variables: test_stimuli,
-  randomize_order: test_procedure,
-  repetitions: 5
+  timeline: [trial_1],
+  data: jsPsych.timelineVariable('data'),
+  loop_function: function(data){
+    document.body.style.backgroundColor = "white";
+    if(jsPsych.pluginAPI.convertKeyCharacterToKeyCode('d') == data.values()[0].key_press){
+      document.getElementById('message').innerHTML = "Correct!";
+      data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode('d');
+      total++;
+      return false;
+    } else {
+      document.getElementById('message').innerHTML = "Wrong.";
+      total++;
+      wrong++;
+      return true;
+    }
+  },
+};
+
+var test_procedure_1 = {
+  timeline: [trial_2],
+  data: jsPsych.timelineVariable('data'),
+  loop_function: function(data){
+    document.body.style.backgroundColor = "rgba(100,0,0,.5)";
+    if(jsPsych.pluginAPI.convertKeyCharacterToKeyCode('f') == data.values()[0].key_press){
+      document.getElementById('message').innerHTML = "Correct!";
+      data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode('f');
+      total++;
+      return false;
+    } else {
+      document.getElementById('message').innerHTML = "Wrong.";
+      total++;
+      wrong++;
+      return true;
+    }
+  },
+};
+
+var test_procedure_2 = {
+  timeline: [trial_3],
+  data: jsPsych.timelineVariable('data'),
+  loop_function: function(data){
+    document.body.style.backgroundColor = "rgba(0,100,0,.5)";
+    if(jsPsych.pluginAPI.convertKeyCharacterToKeyCode('j') == data.values()[0].key_press){
+      document.getElementById('message').innerHTML = "Correct!";
+      data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode('j');
+      total++;
+      return false;
+    } else {
+      document.getElementById('message').innerHTML = "Wrong.";
+      total++;
+      wrong++;
+      return true;
+    }
+  },
+};
+
+var test_procedure_3 = {
+  timeline: [trial_4],
+  data: jsPsych.timelineVariable('data'),
+  loop_function: function(data){
+    document.body.style.backgroundColor = "rgba(0,0,100,.5)";
+    if(jsPsych.pluginAPI.convertKeyCharacterToKeyCode('k') == data.values()[0].key_press){
+      document.getElementById('message').innerHTML = "Correct!";
+      data.correct = data.key_press == jsPsych.pluginAPI.convertKeyCharacterToKeyCode('k');
+      total++;
+      return false;
+    } else {
+      document.getElementById('message').innerHTML = "Wrong.";
+      total++;
+      wrong++;
+      return true;
+    }
+  },
 };
 
 var debrief_block = {
   type: "html-keyboard-response",
   stimulus: function() {
 
-    var trials = jsPsych.data.get().filter({test_part: 'test'});
+    /*var trials = jsPsych.data.get().filter({test_part: 'test'});
     var correct_trials = trials.filter({correct: true});
     var accuracy = Math.round(correct_trials.count() / trials.count() * 100);
-    var rt = Math.round(correct_trials.select('rt').mean());
+    var rt = Math.round(correct_trials.select('rt').mean());*/
+    if(wrong == total){
+      var accuracy = 0;
+    } else {
+      var accuracy = Math.round((total - wrong) / total * 100);
+    }
+    document.getElementById('message').innerHTML = "";
 
     return "<p>You responded correctly on "+accuracy+"% of the trials.</p>"+
-    "<p>Your average response time was "+rt+"ms.</p>"+
     "<p>Press any key to complete the experiment. Thank you!</p>";
 
-  }
+  },
+  response_ends_trial: false
 };
+
+var sequence = {
+  timeline:[test_procedure_1, test_procedure_2, test_procedure, test_procedure_3, test_procedure_2, test_procedure_1, test_procedure_3, 
+  test_procedure, test_procedure_2, test_procedure_3, test_procedure_1, test_procedure],
+  repetitions: 3
+}
 
 function startExperiment() {
 	timeline.push(welcome);
 	timeline.push(instructions);
-	timeline.push(trial_1, trial_2, trial_3, trial_4);
-	timeline.push(test_procedure);
-	timeline.push(debrief_block);
+  timeline.push(sequence);
+  timeline.push(debrief_block);
 
 
 	jsPsych.init({
@@ -112,7 +186,7 @@ function startExperiment() {
 		on_finish: function() {
 			jsPsych.data.addProperties({subject: 1, condition: 'control', Accuracy: getAccuracy(), AvgResponseTime: getAvgResponseTime()});
 			var data = jsPsych.data.get().filter({'test_part': 'test'}).ignore('internal_node_id').ignore('stimulus').ignore('rt').ignore('trial_type').ignore('test_part').csv();
-			writeToFile(data, 'text.csv');
+			//writeToFile(data, 'text.csv');
 		}
 	});
 }

@@ -1,0 +1,13 @@
+.jspsych-content img {
+	width: 500px;
+}
+
+h1#message {
+	position: relative;
+	text-align: center;
+	top: -20vw;
+}
+
+body {
+	background-color: #ffffff;
+}
